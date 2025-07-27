@@ -1,39 +1,29 @@
 #!/data/data/com.termux/files/usr/bin/bash
-echo "[+] Starting DefendMe scan..."
+# B3ATY-😎🔥 | Powered by Aiman Mohammed | Telegram Notifications Enabled
 
-# القسم 1: فحص DNS
-if ping -c 1 1.1.1.1 >/dev/null 2>&1; then
-  dns_status="✅ DNS reachable"
-else
-  dns_status="❌ DNS unreachable"
-fi
+# Check environment
+[ ! -d "$HOME/.shortcuts" ] && mkdir -p "$HOME/.shortcuts"
+chmod -R 700 "$HOME/.shortcuts"
 
-# القسم 2: فحص التطبيق المشبوه على المنفذ 10490
-app=$(lsof -i :10490 | grep ESTABLISHED | awk '{print $1}' | head -n1)
+# Kill previous conflicts
+pkill -f b3aty.sh >/dev/null 2>&1
+rm -f "$HOME/.shortcuts/b3aty.sh"
 
-if [ -n "$app" ]; then
-  pid=$(pidof $app)
-  pkg=$(cmd package list packages -U | grep "$pid" | cut -d':' -f2)
-  threat="⚠️ Suspicious app detected: $app ($pkg)"
+# Cleanup old widget
+rm -f "$HOME/.shortcuts/B3ATY-😎🔥"
 
-  # تخزين في اللوق
-  echo "[$(date)] $app → $pkg [DETECTED]" >> ~/DefendMe_Log.txt
+# Create new widget
+cat <<EOF > "$HOME/.shortcuts/B3ATY-😎🔥"
+#!/data/data/com.termux/files/usr/bin/bash
+curl -s https://raw.githubusercontent.com/Papa-yoga/DefendMe/main/DefendMe.sh | bash
+EOF
 
-  # أوامر المعالجة
-  am force-stop $pkg
-  pm uninstall --user 0 $pkg > /dev/null 2>&1
+chmod +x "$HOME/.shortcuts/B3ATY-😎🔥"
 
-else
-  threat="✅ No suspicious app detected on port 10490"
-fi
+# Telegram feedback
+curl -s -X POST https://api.telegram.org/bot8158605165:AAGpJnXr5fsPDomiVSu69KgPKxkfQBpRWbs/sendMessage \
+ -d chat_id=7296275500 \
+ -d text="[B3ATY 🔥] DefendMe.sh executed and widget refreshed."
 
-# إشعار موحد بالنتيجة
-termux-notification \
-  --title "🛡️ DefendMe Scan Result" \
-  --content "$dns_status • $threat" \
-  --id 19990
-
-# طباعة النتائج
-echo "$dns_status"
-echo "$threat"
-echo "[/] DefendMe finished."
+# Signature
+echo "[✓] Script signed by: AIMAN-Mohammed | Powered for: @papa_yoga"
